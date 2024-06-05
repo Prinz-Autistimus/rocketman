@@ -5,11 +5,19 @@ import java.util.function.Consumer;
 
 public class Asteroid {
 
+    //--Settings----------------------------------
+    public static final int SIZE = 50;
+
+    //--Attributes--------------------------------
+
+    //Position
     private final Vector2 pos;
     private Vector2 speedDir;
 
+    //Rotation
     private final double rotation;
 
+    //Events
     private final Consumer<Asteroid> onDelete;
 
     public Asteroid(Vector2 _pos, Vector2 _speedDir, double _rotation, Consumer<Asteroid> _onDelete) {
