@@ -1,5 +1,9 @@
-package com.rocketman.game;
+package com.rocketman.game.logic;
 
+import com.rocketman.game.audio.AudioManager;
+import com.rocketman.game.objects.Asteroid;
+import com.rocketman.game.objects.Bullet;
+import com.rocketman.game.objects.Player;
 import com.rocketman.gui.GuiClass;
 import com.rocketman.math.Vector2;
 

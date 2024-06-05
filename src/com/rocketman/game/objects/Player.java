@@ -1,5 +1,7 @@
-package com.rocketman.game;
+package com.rocketman.game.objects;
 
+import com.rocketman.game.audio.AudioManager;
+import com.rocketman.game.logic.GameManager;
 import com.rocketman.math.Vector2;
 
 public class Player {

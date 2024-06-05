@@ -1,8 +1,6 @@
 package com.rocketman.main;
 
-import com.rocketman.game.GameManager;
-import com.rocketman.gui.GuiClass;
-import com.rocketman.math.Vector2;
+import com.rocketman.game.logic.GameManager;
 
 public class MainClass {
 

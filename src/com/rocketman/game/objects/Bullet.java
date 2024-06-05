@@ -1,5 +1,6 @@
-package com.rocketman.game;
+package com.rocketman.game.objects;
 
+import com.rocketman.game.logic.GameManager;
 import com.rocketman.math.Vector2;
 import java.util.function.Consumer;
 

@@ -1,9 +1,9 @@
 package com.rocketman.gui;
 
-import com.rocketman.game.Asteroid;
-import com.rocketman.game.Bullet;
-import com.rocketman.game.GameManager;
-import com.rocketman.game.Player;
+import com.rocketman.game.objects.Asteroid;
+import com.rocketman.game.objects.Bullet;
+import com.rocketman.game.logic.GameManager;
+import com.rocketman.game.objects.Player;
 import com.rocketman.math.Vector2;
 
 import javax.imageio.ImageIO;

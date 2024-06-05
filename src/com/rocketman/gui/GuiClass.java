@@ -1,16 +1,14 @@
 package com.rocketman.gui;
 
-import com.rocketman.game.Asteroid;
-import com.rocketman.game.Bullet;
-import com.rocketman.game.Player;
-import com.rocketman.math.Vector2;
+import com.rocketman.game.objects.Asteroid;
+import com.rocketman.game.objects.Bullet;
+import com.rocketman.game.objects.Player;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;

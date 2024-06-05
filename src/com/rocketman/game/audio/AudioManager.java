@@ -1,16 +1,13 @@
-package com.rocketman.game;
+package com.rocketman.game.audio;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.FloatControl;
 import javax.swing.*;
-import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Objects;
-import java.util.function.BiConsumer;
 
 public class AudioManager {
 
