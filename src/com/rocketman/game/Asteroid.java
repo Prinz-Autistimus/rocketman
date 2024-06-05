@@ -1,18 +1,16 @@
 package com.rocketman.game;
 
 import com.rocketman.math.Vector2;
-
-import java.awt.*;
 import java.util.function.Consumer;
 
 public class Asteroid {
 
-    private Vector2 pos;
+    private final Vector2 pos;
     private Vector2 speedDir;
 
-    private double rotation;
+    private final double rotation;
 
-    private Consumer<Asteroid> onDelete;
+    private final Consumer<Asteroid> onDelete;
 
     public Asteroid(Vector2 _pos, Vector2 _speedDir, double _rotation, Consumer<Asteroid> _onDelete) {
         pos = _pos;
@@ -35,11 +33,12 @@ public class Asteroid {
     }
 
     public void move() {
-        Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
-        if(pos.x() <= -200 || pos.x() >= size.width+200 || pos.y() <= -200 || pos.y() >= size.height+200) {
-            onDelete.accept(this);
-        }
+        if(isOutOfBounds()) { onDelete.accept(this); }
         pos.add(speedDir);
+    }
+
+    private boolean isOutOfBounds() {
+        return pos.x() <= -200 || pos.x() >= GameManager.screenSize.width+200 || pos.y() <= -200 || pos.y() >= GameManager.screenSize.height+200;
     }
 
     public double getRotation() { return rotation; }
