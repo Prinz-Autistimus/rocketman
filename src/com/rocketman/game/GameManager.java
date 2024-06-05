@@ -45,6 +45,8 @@ public class GameManager {
         player.getPosition().set(d.getWidth()/2 - 50, d.getHeight()/2 - 50);
         player.setHealth(1);
         player.resetScore();
+        AudioManager.stopAll();
+        AudioManager.playSound("theme");
     }
 
     private void startUpdater() {
@@ -84,6 +86,7 @@ public class GameManager {
         if(!player.canShoot()) { return; }
         bullets.add(new Bullet(player.getPosition().copy().add(50-15, 50-15), player.getDirection().scaled(1/player.getDirection().len()).scaled(20), player.getRotation(), this::onBulletDelete));
         player.shoot();
+        AudioManager.playSound("blaster");
     }
 
     private void checkRocketCollision() {

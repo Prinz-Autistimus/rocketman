@@ -8,7 +8,9 @@ import javax.swing.*;
 import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.function.BiConsumer;
 
 public class AudioManager {
 
@@ -21,20 +23,30 @@ public class AudioManager {
             return;
         }
 
-        audioClips.get("theme").loop(Clip.LOOP_CONTINUOUSLY);
-
         System.getLogger("AudioManager").log(System.Logger.Level.INFO, "Audio Loaded");
         instance = this;
     }
 
     private boolean grabAudio() {
         HashMap<String, String> initializer = new HashMap<>();
-        HashMap<String, Float> gains = new HashMap<>();
+        HashMap<String, Double> gains = new HashMap<>();
+        HashSet<String> loopsAutoStart = new HashSet<>();
 
         initializer.put("theme", "audio/soundtrack.wav");
+        gains.put("theme", .85);
+        loopsAutoStart.add("theme");
 
         initializer.put("asteroid_destroy", "audio/asteroid_explosion.wav");
-        gains.put("asteroid_destroy", 4f);
+        gains.put("asteroid_destroy", .88);
+
+        initializer.put("blaster", "audio/blaster.wav");
+        gains.put("blaster", .63);
+
+        initializer.put("score_multiple", "audio/score_multiple.wav");
+        gains.put("score_multiple", .65);
+
+        initializer.put("near_death", "audio/near_death.wav");
+        gains.put("near_death", .85);
 
 
         for(String k : initializer.keySet()) {
@@ -47,8 +59,11 @@ public class AudioManager {
 
                 if(gains.containsKey(k)) {
                     FloatControl gain = (FloatControl) c.getControl(FloatControl.Type.MASTER_GAIN);
-                    gain.setValue(gains.get(k));
+                    float range = gain.getMaximum() - gain.getMinimum();
+                    gain.setValue((float) ((range * gains.get(k)) + gain.getMinimum()));
                 }
+
+                if(loopsAutoStart.contains(k)) { c.loop(Clip.LOOP_CONTINUOUSLY); }
                 audioClips.put(k, c);
 
             }catch(Exception e) {
@@ -67,7 +82,7 @@ public class AudioManager {
     public static void playSound(String name) {
         Clip c = audioClips.get(name);
         if(c != null) {
-            c.setMicrosecondPosition(0);
+            c.setFramePosition(0);
             c.start();
         }
     }
@@ -78,6 +93,10 @@ public class AudioManager {
             c.stop();
             c.setMicrosecondPosition(0);
         }
+    }
+
+    public static void stopAll() {
+        audioClips.values().forEach(n -> {n.stop(); n.setMicrosecondPosition(0);});
     }
 
 }

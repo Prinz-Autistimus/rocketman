@@ -130,17 +130,26 @@ public class Player {
 
     public void setHealth(double x) {
         health = Math.max(0, Math.min(1, x));
+        if(health <= .2) {
+            AudioManager.playSound("near_death");
+        }
         if(health <= .001) {
             Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
             speedDir = new Vector2(0, 0);
             pos = new Vector2(d.getWidth()/2, d.getHeight()/2);
+            AudioManager.stopSound("near_death");
             onPlayerDeath.run();
         }
+
+
     }
 
     public void increaseScore() {
         ++score;
         resetAmmo();
+        if(score % 10 == 0) {
+            AudioManager.playSound("score_multiple");
+        }
     }
 
     public void resetScore() {
