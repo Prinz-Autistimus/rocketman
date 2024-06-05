@@ -75,11 +75,11 @@ public class Player {
     }
 
     private boolean isOutOfBoundsX() {
-        return pos.x() <= 0 || pos.x() >= GameManager.screenSize.getWidth();
+        return pos.x() <= 0 || pos.x() >= GameManager.SCREEN_SIZE.getWidth();
     }
 
     private boolean isOutOfBoundsY() {
-        return pos.y() <= 0 || pos.y() >= GameManager.screenSize.getHeight();
+        return pos.y() <= 0 || pos.y() >= GameManager.SCREEN_SIZE.getHeight();
     }
     public boolean canShoot() { return canShoot && ammo > 0; }
 

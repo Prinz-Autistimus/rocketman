@@ -8,6 +8,7 @@ public class Bullet {
     //--Settings---------------------------------------------------
 
     public static final int SIZE = 30;
+    public static final int SPEED = 20;
 
     //--Attributes-------------------------------------------------
 
@@ -37,7 +38,7 @@ public class Bullet {
     }
 
     private boolean isOutOfBounds() {
-        return pos.x() <= -200 || pos.x() >= GameManager.screenSize.width+200 || pos.y() <= -200 || pos.y() >= GameManager.screenSize.height+200;
+        return pos.x() <= -200 || pos.x() >= GameManager.SCREEN_SIZE.width+200 || pos.y() <= -200 || pos.y() >= GameManager.SCREEN_SIZE.height+200;
     }
 
     public void collision() {

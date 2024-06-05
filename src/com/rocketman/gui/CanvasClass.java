@@ -110,11 +110,11 @@ public class CanvasClass extends JPanel {
 
     private void drawAmmo(Graphics g) {
         for(int i = 0; i < player.getAmmo(); ++i) {
-            g.drawImage(assets.get("bullet"), i*40, (int) GameManager.screenSize.getHeight()-150, 80, 80, null);
+            g.drawImage(assets.get("bullet"), i*40, (int) GameManager.SCREEN_SIZE.getHeight()-150, 80, 80, null);
         }
 
         g.setColor(new Color(255,70,120,255));
-        g.drawRoundRect(5, (int) GameManager.screenSize.getHeight()-150, player.getMaxAmmo()*40 + 35, 80, 20, 20);
+        g.drawRoundRect(5, (int) GameManager.SCREEN_SIZE.getHeight()-150, player.getMaxAmmo()*40 + 35, 80, 20, 20);
     }
 
     private void drawScore(Graphics g) {
@@ -122,7 +122,7 @@ public class CanvasClass extends JPanel {
         Font f = new Font("TimesRoman", Font.PLAIN, 30);
         g.setFont(f);
         String scoreText = "Score: " + player.getScore();
-        g.drawString(scoreText, (int) GameManager.screenSize.getWidth()/2-g.getFontMetrics().stringWidth(scoreText)/2, 35);
+        g.drawString(scoreText, (int) GameManager.SCREEN_SIZE.getWidth()/2-g.getFontMetrics().stringWidth(scoreText)/2, 35);
 
     }
 

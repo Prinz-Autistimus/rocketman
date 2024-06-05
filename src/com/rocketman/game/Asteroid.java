@@ -7,6 +7,8 @@ public class Asteroid {
 
     //--Settings----------------------------------
     public static final int SIZE = 50;
+    public static final int SPAWN_DELAY_DECREASE = 50;
+    public static final int MINIMUM_SPAWN_DELAY = 500;
 
     //--Attributes--------------------------------
 
@@ -46,7 +48,7 @@ public class Asteroid {
     }
 
     private boolean isOutOfBounds() {
-        return pos.x() <= -200 || pos.x() >= GameManager.screenSize.width+200 || pos.y() <= -200 || pos.y() >= GameManager.screenSize.height+200;
+        return pos.x() <= -200 || pos.x() >= GameManager.SCREEN_SIZE.width+200 || pos.y() <= -200 || pos.y() >= GameManager.SCREEN_SIZE.height+200;
     }
 
     public double getRotation() { return rotation; }

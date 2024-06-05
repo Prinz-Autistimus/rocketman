@@ -8,41 +8,65 @@ import java.util.Vector;
 
 public class GameManager {
 
+
+    //--Attributes-------------------------------------------------
+
+    //Gui
     private GuiClass gui;
+    public static final Dimension SCREEN_SIZE = Toolkit.getDefaultToolkit().getScreenSize();
+
+    //Objects
     private Player player;
     private Vector<Asteroid> asteroids;
     private Vector<Bullet> bullets;
+
+    //Settings
+    private static final int TICK_SPEED = 10;
+    private static final int INTERFACE_SPEED = 17;
+    private static final long INITIAL_ASTEROID_PAUSE_TIME = 5000;
+    private long asteroidPauseTime = INITIAL_ASTEROID_PAUSE_TIME;
+    private long lastAsteroidGeneratedTime = 0;
     private boolean updaterRunning = false;
     private boolean interfaceRunning = false;
 
-    private long lastAsteroidGeneratedTime = 0;
-    private long initialPauseTime = 5000;
-    private long asteroidPauseTime = initialPauseTime;
-
     public GameManager(){
+        start();
+    }
 
+    public void start() {
+        //initialize AdioManager
         AudioManager.initialize();
         AudioManager.playSound("theme");
 
-        Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-        player = new Player(new Vector2(d.getWidth()/2 - 50, d.getHeight()/2 - 50), this::onPlayerDeath);
+        //initialize GameObjects
+        player = new Player(new Vector2(SCREEN_SIZE.getWidth()/2 - 50, SCREEN_SIZE.getHeight()/2 - 50), this::onPlayerDeath);
         asteroids = new Vector<>();
         bullets = new Vector<>();
 
+        //initialize GUI
         gui = new GuiClass(1920, 1080, player, asteroids, bullets, this::stopUpdater, this::onRotationInput, this::onAccelerationInput, this::onShootInput);
 
+        //Start Game Logic
         startUpdater();
         startInterface();
+
+        //Open Window
         gui.show();
     }
 
+    public void stop() {
+        reset();
+        AudioManager.stopAll();
+        stopUpdater();
+        gui.hide();
+    }
+
     private void reset() {
-        Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-        asteroidPauseTime = initialPauseTime;
+        asteroidPauseTime = INITIAL_ASTEROID_PAUSE_TIME;
         lastAsteroidGeneratedTime = System.currentTimeMillis();
         bullets.clear();
         asteroids.clear();
-        player.getPosition().set(d.getWidth()/2 - 50, d.getHeight()/2 - 50);
+        player.getPosition().set(SCREEN_SIZE.getWidth()/2 - 50, SCREEN_SIZE.getHeight()/2 - 50);
         player.setHealth(1);
         player.resetScore();
         AudioManager.stopAll();
@@ -84,7 +108,7 @@ public class GameManager {
 
     private void onShootInput() {
         if(!player.canShoot()) { return; }
-        bullets.add(new Bullet(player.getPosition().copy().add(50-15, 50-15), player.getDirection().scaled(1/player.getDirection().len()).scaled(20), player.getRotation(), this::onBulletDelete));
+        bullets.add(new Bullet(player.getPosition().copy().add(Player.SIZE/2-Bullet.SIZE/2, Player.SIZE/2-Bullet.SIZE/2), player.getDirection().scaled(1/player.getDirection().len()).scaled(Bullet.SPEED), player.getRotation(), this::onBulletDelete));
         player.shoot();
         AudioManager.playSound("blaster");
     }
@@ -92,13 +116,13 @@ public class GameManager {
     private void checkRocketCollision() {
         for(int i = 0; i < asteroids.size(); ++i) {
             Asteroid a = asteroids.get(i);
-            double dist = a.getPos().copy().add(25, 25).dist(player.getPosition().copy().add(50, 50));
+            double dist = a.getPos().copy().add(Asteroid.SIZE/2, Asteroid.SIZE/2).dist(player.getPosition().copy().add(Player.SIZE/2, Player.SIZE/2));
             if(dist < 50) {
                 a.collision();
                 if(!player.isImmune()) {
                     player.setHealth(player.getHealth()-.05);
                     player.increaseScore();
-                    asteroidPauseTime = Math.max(asteroidPauseTime-50, 500);
+                    asteroidPauseTime = Math.max(asteroidPauseTime-Asteroid.SPAWN_DELAY_DECREASE, Asteroid.MINIMUM_SPAWN_DELAY);
                 }
                 player.setImmune();
                 AudioManager.playSound("asteroid_destroy");
@@ -114,11 +138,11 @@ public class GameManager {
 
             Asteroid a = asteroids.get(0);
             Asteroid nearestAsteroid = asteroids.get(0);
-            double nearestDistance = b.getPos().copy().add(15, 15).dist(a.getPos().copy().add(25, 25));
+            double nearestDistance = b.getPos().copy().add(Bullet.SIZE/2, Bullet.SIZE/2).dist(a.getPos().copy().add(Asteroid.SIZE/2, Asteroid.SIZE/2));
 
             for(int j = 1; j < asteroids.size(); ++j) {
                 a = asteroids.get(j);
-                double nextDistance = b.getPos().copy().add(15, 15).dist(a.getPos().copy().add(25, 25));
+                double nextDistance = b.getPos().copy().add(Bullet.SIZE/2, Bullet.SIZE/2).dist(a.getPos().copy().add(Asteroid.SIZE/2, Asteroid.SIZE/2));
                 if(nextDistance < nearestDistance) {
                     nearestDistance = nextDistance;
                     nearestAsteroid = a;
@@ -129,7 +153,7 @@ public class GameManager {
                 b.collision();
                 nearestAsteroid.collision();
                 player.increaseScore();
-                asteroidPauseTime = Math.max(asteroidPauseTime-50, 500);
+                asteroidPauseTime = Math.max(asteroidPauseTime-Asteroid.SPAWN_DELAY_DECREASE, Asteroid.MINIMUM_SPAWN_DELAY);
                 AudioManager.playSound("asteroid_destroy");
             }
         }
@@ -183,49 +207,43 @@ public class GameManager {
     }
 
     private Thread updaterInstance() {
-        return new Thread(new Runnable() {
-            @Override
-            public void run() {
-                System.getLogger("GameManager").log(System.Logger.Level.INFO, "Updater Started");
+        return new Thread(() -> {
+            System.getLogger("GameManager").log(System.Logger.Level.INFO, "Updater Started");
 
-                while(updaterRunning) {
-                    player.updateRotation();
-                    player.updatePosition();
+            while(updaterRunning) {
+                player.updateRotation();
+                player.updatePosition();
 
-                    for(int i = 0; i < asteroids.size(); ++i) {
-                        asteroids.get(i).move();
-                    }
-
-                    for(int i = 0; i < bullets.size(); ++i) {
-                        bullets.get(i).move();
-                    }
-
-                    checkRocketCollision();
-                    checkBulletCollision();
-                    tryGenerateAsteroid();
-
-                    try {
-                        Thread.sleep(10);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
+                for(int i = 0; i < asteroids.size(); ++i) {
+                    asteroids.get(i).move();
                 }
-                System.getLogger("GameManager").log(System.Logger.Level.INFO, "Updater Stopped");
+
+                for(int i = 0; i < bullets.size(); ++i) {
+                    bullets.get(i).move();
+                }
+
+                checkRocketCollision();
+                checkBulletCollision();
+                tryGenerateAsteroid();
+
+                try {
+                    Thread.sleep(TICK_SPEED);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
+            System.getLogger("GameManager").log(System.Logger.Level.INFO, "Updater Stopped");
         });
     }
 
     private Thread interfaceUpdaterInstance() {
-        return new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while(interfaceRunning) {
-                    gui.repaint();
-                    try {
-                        Thread.sleep(17);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
+        return new Thread(() -> {
+            while(interfaceRunning) {
+                gui.repaint();
+                try {
+                    Thread.sleep(INTERFACE_SPEED);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
                 }
             }
         });

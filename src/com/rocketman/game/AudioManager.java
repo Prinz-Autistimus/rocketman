@@ -43,7 +43,7 @@ public class AudioManager {
         gains.put("blaster", .63);
 
         initializer.put("score_multiple", "audio/score_multiple.wav");
-        gains.put("score_multiple", .65);
+        gains.put("score_multiple", .66);
 
         initializer.put("near_death", "audio/near_death.wav");
         gains.put("near_death", .85);
