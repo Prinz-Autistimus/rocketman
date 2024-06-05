@@ -26,16 +26,15 @@ public class Player {
     private static final double rotAcc = .0015;
 
     //Game Mechanics
+    private static final int INITIAL_AMMO = 8;
+    private int ammo = INITIAL_AMMO;
+    private int score = 0;
     private double health = 1;
-
     private boolean immune = false;
     private boolean canShoot = true;
-    private int score = 0;
-    private int initialAmmo = 8;
-    private int ammo = initialAmmo;
 
     //Events
-    private Runnable onPlayerDeath;
+    private final Runnable onPlayerDeath;
 
     public Player(Vector2 _pos, Runnable _onPlayerDeath) {
         pos = _pos;
@@ -51,24 +50,12 @@ public class Player {
         return rotation;
     }
 
-    public void setRotation(double _rotation) {
-        rotation = _rotation % 360;
-    }
-
     public void accelerateRotation(int dir) {
         rotSpeed += rotAcc * dir;
     }
 
     public void updateRotation() {
         rotation += rotSpeed;
-    }
-
-    public void setPosition(Vector2 newPos) {
-        pos.set(newPos);
-    }
-
-    public void move(double distX, double distY) {
-        pos.add(distX, distY);
     }
 
     public void move(Vector2 dist) {
@@ -98,16 +85,13 @@ public class Player {
         if(!canShoot) { return; }
         canShoot = false;
         --ammo;
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(SHOT_DELAY);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                canShoot = true;
+        new Thread(() -> {
+            try {
+                Thread.sleep(SHOT_DELAY);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
+            canShoot = true;
         }).start();
     }
 
@@ -117,16 +101,13 @@ public class Player {
         if(immune) { return; }
 
         immune = true;
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(IMMUNE_TIME);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                immune = false;
+        new Thread(() -> {
+            try {
+                Thread.sleep(IMMUNE_TIME);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
+            immune = false;
         }).start();
     }
 
@@ -165,11 +146,11 @@ public class Player {
     }
 
     private void resetAmmo() {
-        ammo = initialAmmo;
+        ammo = INITIAL_AMMO;
     }
 
     public int getAmmo() { return ammo; }
-    public int getMaxAmmo() { return initialAmmo; }
+    public int getMaxAmmo() { return INITIAL_AMMO; }
 
     public int getScore() { return score; }
 
