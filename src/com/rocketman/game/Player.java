@@ -4,13 +4,15 @@ import com.rocketman.math.Vector2;
 
 public class Player {
 
-    //--Settings
+    //--Settings---------------------------------------------------
     private static final int SHOT_DELAY = 100;
 
     private static final int IMMUNE_TIME = 2500;
 
     private static final double LOW_HEALTH = .2;
     private static final double DEATH_LIMIT = .001;
+    public static final int SIZE = 100;
+    public static final int HEALTHBAR_SIZE = 50;
 
     //--Attributes-------------------------------------------------
 
