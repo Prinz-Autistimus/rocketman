@@ -2,19 +2,30 @@ package com.rocketman.game;
 
 import com.rocketman.math.Vector2;
 
-import java.awt.*;
-
 public class Player {
 
+    //--Settings
+    private static final int SHOT_DELAY = 100;
+
+    private static final int IMMUNE_TIME = 2500;
+
+    private static final double LOW_HEALTH = .2;
+    private static final double DEATH_LIMIT = .001;
+
+    //--Attributes-------------------------------------------------
+
+    //Position
     private Vector2 pos;
     private Vector2 speedDir = new Vector2(0, 0);
-    private double posAcc = 0.034;
+    private static final double posAcc = 0.034;
     private boolean isAccelerating = false;
 
+    //Rotation
     private double rotation = 0;
     private double rotSpeed = 0;
-    private double rotAcc = .0015;
+    private static final double rotAcc = .0015;
 
+    //Game Mechanics
     private double health = 1;
 
     private boolean immune = false;
@@ -23,11 +34,9 @@ public class Player {
     private int initialAmmo = 8;
     private int ammo = initialAmmo;
 
+    //Events
     private Runnable onPlayerDeath;
 
-    public Player(Runnable _onPlayerDeath) {
-        this(new Vector2(), _onPlayerDeath);
-    }
     public Player(Vector2 _pos, Runnable _onPlayerDeath) {
         pos = _pos;
         onPlayerDeath = _onPlayerDeath;
@@ -71,14 +80,17 @@ public class Player {
     }
 
     public void updatePosition() {
-        Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
-        if(pos.x() <= 0 || pos.x() >= size.width) {
-            speedDir.setX(speedDir.x()* (-1));
-        }
-        if(pos.y() <= 0 || pos.y() >= size.height) {
-            speedDir.setY(speedDir.y()* (-1));
-        }
+        if(isOutOfBoundsX()) { speedDir.setX(speedDir.x()* (-1)); }
+        if(isOutOfBoundsY()) { speedDir.setY(speedDir.y()* (-1)); }
         move(speedDir);
+    }
+
+    private boolean isOutOfBoundsX() {
+        return pos.x() <= 0 || pos.x() >= GameManager.screenSize.getWidth();
+    }
+
+    private boolean isOutOfBoundsY() {
+        return pos.y() <= 0 || pos.y() >= GameManager.screenSize.getHeight();
     }
     public boolean canShoot() { return canShoot && ammo > 0; }
 
@@ -90,7 +102,7 @@ public class Player {
             @Override
             public void run() {
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(SHOT_DELAY);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
@@ -109,7 +121,7 @@ public class Player {
             @Override
             public void run() {
                 try {
-                    Thread.sleep(2500);
+                    Thread.sleep(IMMUNE_TIME);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
@@ -130,18 +142,14 @@ public class Player {
 
     public void setHealth(double x) {
         health = Math.max(0, Math.min(1, x));
-        if(health <= .2) {
+        if(health <= LOW_HEALTH) {
             AudioManager.playSound("near_death");
         }
-        if(health <= .001) {
-            Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+        if(health <= DEATH_LIMIT) {
             speedDir = new Vector2(0, 0);
-            pos = new Vector2(d.getWidth()/2, d.getHeight()/2);
             AudioManager.stopSound("near_death");
             onPlayerDeath.run();
         }
-
-
     }
 
     public void increaseScore() {
