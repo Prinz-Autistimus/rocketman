@@ -25,46 +25,26 @@ public class AudioManager {
     }
 
     private boolean grabAudio() {
-        HashMap<String, String> initializer = new HashMap<>();
-        HashMap<String, Double> gains = new HashMap<>();
-        HashSet<String> loopsAutoStart = new HashSet<>();
-
-        initializer.put("theme", "audio/soundtrack.wav");
-        gains.put("theme", .85);
-        loopsAutoStart.add("theme");
-
-        initializer.put("asteroid_destroy", "audio/asteroid_explosion.wav");
-        gains.put("asteroid_destroy", .88);
-
-        initializer.put("blaster", "audio/blaster.wav");
-        gains.put("blaster", .63);
-
-        initializer.put("score_multiple", "audio/score_multiple.wav");
-        gains.put("score_multiple", .66);
-
-        initializer.put("near_death", "audio/near_death.wav");
-        gains.put("near_death", .85);
 
 
-        for(String k : initializer.keySet()) {
+        for(Sounds k : Sounds.values()) {
             try {
-                URL url = ClassLoader.getSystemResource(initializer.get(k));
-                audioStreams.put(k, AudioSystem.getAudioInputStream(url));
+                URL url = ClassLoader.getSystemResource(k.getPath());
+                audioStreams.put(k.getKey(), AudioSystem.getAudioInputStream(url));
 
                 Clip c = AudioSystem.getClip();
-                c.open(audioStreams.get(k));
+                c.open(audioStreams.get(k.getKey()));
 
-                if(gains.containsKey(k)) {
-                    FloatControl gain = (FloatControl) c.getControl(FloatControl.Type.MASTER_GAIN);
-                    float range = gain.getMaximum() - gain.getMinimum();
-                    gain.setValue((float) ((range * gains.get(k)) + gain.getMinimum()));
-                }
+                FloatControl gain = (FloatControl) c.getControl(FloatControl.Type.MASTER_GAIN);
+                float range = gain.getMaximum() - gain.getMinimum();
+                gain.setValue((float) ((range * k.getGain()) + gain.getMinimum()));
 
-                if(loopsAutoStart.contains(k)) { c.loop(Clip.LOOP_CONTINUOUSLY); }
-                audioClips.put(k, c);
+
+                if(k.isLoop()) { c.loop(Clip.LOOP_CONTINUOUSLY); }
+                audioClips.put(k.getKey(), c);
 
             }catch(Exception e) {
-                JOptionPane.showMessageDialog(null, "Error while loading audiofile: " + initializer.get(k), "Asset Loading Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Error while loading audiofile: " + k.getKey() + " from " + k.getPath(), "Asset Loading Error", JOptionPane.ERROR_MESSAGE);
                 e.printStackTrace();
                 return false;
             }
@@ -84,6 +64,10 @@ public class AudioManager {
         }
     }
 
+    public static void playSound(Sounds s) {
+        playSound(s.getKey());
+    }
+
     public static void stopSound(String name) {
         Clip c = audioClips.get(name);
         if(c != null && c.isActive()) {
@@ -92,8 +76,12 @@ public class AudioManager {
         }
     }
 
+    public static void stopSound(Sounds s) {
+        stopSound(s.getKey());
+    }
+
     public static void stopAll() {
-        audioClips.values().forEach(n -> {n.stop(); n.setMicrosecondPosition(0);});
+        audioClips.values().forEach(n -> {n.stop(); n.setFramePosition(0);});
     }
 
 }

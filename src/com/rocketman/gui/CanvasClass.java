@@ -165,6 +165,9 @@ public class CanvasClass extends JPanel {
     }
 
     private void drawRocket(Graphics g) {
+        if(player.isDead()) {
+            return;
+        }
         double rot = player.getRotation();
         BufferedImage transformedRocket = rotate(getRocket(), rot);
         g.drawImage(transformedRocket, (int) player.getPosition().x(), (int) player.getPosition().y(), (int) player.getPosition().x()+Player.SIZE, (int) player.getPosition().y()+Player.SIZE, 0, 0, transformedRocket.getWidth(), transformedRocket.getHeight(), null);

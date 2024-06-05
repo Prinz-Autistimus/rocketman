@@ -1,6 +1,7 @@
 package com.rocketman.game.logic;
 
 import com.rocketman.game.audio.AudioManager;
+import com.rocketman.game.audio.Sounds;
 import com.rocketman.game.objects.Asteroid;
 import com.rocketman.game.objects.Bullet;
 import com.rocketman.game.objects.Player;
@@ -18,11 +19,14 @@ public class GameManager {
     //Gui
     private GuiClass gui;
     public static final Dimension SCREEN_SIZE = Toolkit.getDefaultToolkit().getScreenSize();
+    public static final int WIDTH = 1920, HEIGHT = 1080;
 
     //Objects
     private Player player;
     private Vector<Asteroid> asteroids;
     private Vector<Bullet> bullets;
+    private  Thread currentUpdaterInstance;
+    private  Thread currentInterfaceUpdaterInstance;
 
     //Settings
     private static final int TICK_SPEED = 10;
@@ -40,7 +44,7 @@ public class GameManager {
     public void start() {
         //initialize AdioManager
         AudioManager.initialize();
-        AudioManager.playSound("theme");
+        AudioManager.playSound(Sounds.THEME);
 
         //initialize GameObjects
         player = new Player(new Vector2(SCREEN_SIZE.getWidth()/2 - 50, SCREEN_SIZE.getHeight()/2 - 50), this::onPlayerDeath);
@@ -48,7 +52,7 @@ public class GameManager {
         bullets = new Vector<>();
 
         //initialize GUI
-        gui = new GuiClass(1920, 1080, player, asteroids, bullets, this::stopUpdater, this::onRotationInput, this::onAccelerationInput, this::onShootInput);
+        gui = new GuiClass(WIDTH, HEIGHT, player, asteroids, bullets, this::stopUpdater, this::onRotationInput, this::onAccelerationInput, this::onShootInput);
 
         //Start Game Logic
         startUpdater();
@@ -62,44 +66,67 @@ public class GameManager {
         reset();
         AudioManager.stopAll();
         stopUpdater();
+        stopInterface();
         gui.hide();
     }
 
     private void reset() {
-        asteroidPauseTime = INITIAL_ASTEROID_PAUSE_TIME;
-        lastAsteroidGeneratedTime = System.currentTimeMillis();
-        bullets.clear();
-        asteroids.clear();
-        player.getPosition().set(SCREEN_SIZE.getWidth()/2 - 50, SCREEN_SIZE.getHeight()/2 - 50);
-        player.setHealth(1);
-        player.resetScore();
-        AudioManager.stopAll();
-        AudioManager.playSound("theme");
+        new Thread(() -> {
+            asteroidPauseTime = INITIAL_ASTEROID_PAUSE_TIME;
+            lastAsteroidGeneratedTime = System.currentTimeMillis();
+            bullets.clear();
+            asteroids.clear();
+            player.getPosition().set(SCREEN_SIZE.getWidth()/2 - 50, SCREEN_SIZE.getHeight()/2 - 50);
+            player.resetRotationSpeed();
+            player.setHealth(1);
+            stopUpdater();
+
+            try {
+                AudioManager.stopAll();
+                AudioManager.playSound(Sounds.SHIP_DESTROY);
+
+                Thread.sleep(2000);
+
+                AudioManager.playSound(Sounds.LOOSE_1);
+                AudioManager.playSound(Sounds.LOOSE_2);
+
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+            player.resetScore();
+            AudioManager.playSound(Sounds.THEME);
+            startUpdater();
+        }).start();
     }
 
     private void startUpdater() {
         updaterRunning = true;
 
         System.getLogger("GameManager").log(System.Logger.Level.INFO, "Starting Updater");
-        updaterInstance().start();
+        currentUpdaterInstance = updaterInstance();
+        currentUpdaterInstance.start();
     }
 
     private void startInterface() {
         interfaceRunning = true;
 
         System.getLogger("GameManager").log(System.Logger.Level.INFO, "Starting Interface");
-        interfaceUpdaterInstance().start();
+        currentInterfaceUpdaterInstance = interfaceUpdaterInstance();
+        currentInterfaceUpdaterInstance.start();
     }
 
     private void stopUpdater() {
         System.getLogger("GameManager").log(System.Logger.Level.INFO, "Stopping Updater");
-        stopInterface();
         updaterRunning = false;
+        currentUpdaterInstance.stop();
     }
 
     private void stopInterface() {
         System.getLogger("GameManager").log(System.Logger.Level.INFO, "Stopping Interface");
         interfaceRunning = false;
+        currentInterfaceUpdaterInstance.stop();
     }
 
     private void onRotationInput(int dir) {
@@ -114,7 +141,7 @@ public class GameManager {
         if(!player.canShoot()) { return; }
         bullets.add(new Bullet(player.getPosition().copy().add(Player.SIZE/2-Bullet.SIZE/2, Player.SIZE/2-Bullet.SIZE/2), player.getDirection().scaled(1/player.getDirection().len()).scaled(Bullet.SPEED), player.getRotation(), this::onBulletDelete));
         player.shoot();
-        AudioManager.playSound("blaster");
+        AudioManager.playSound(Sounds.BLASTER);
     }
 
     private void checkRocketCollision() {
@@ -129,7 +156,7 @@ public class GameManager {
                     asteroidPauseTime = Math.max(asteroidPauseTime-Asteroid.SPAWN_DELAY_DECREASE, Asteroid.MINIMUM_SPAWN_DELAY);
                 }
                 player.setImmune();
-                AudioManager.playSound("asteroid_destroy");
+                AudioManager.playSound(Sounds.ASTEROID_DESTROY);
             }
         }
     }
@@ -158,7 +185,7 @@ public class GameManager {
                 nearestAsteroid.collision();
                 player.increaseScore();
                 asteroidPauseTime = Math.max(asteroidPauseTime-Asteroid.SPAWN_DELAY_DECREASE, Asteroid.MINIMUM_SPAWN_DELAY);
-                AudioManager.playSound("asteroid_destroy");
+                AudioManager.playSound(Sounds.ASTEROID_DESTROY);
             }
         }
     }

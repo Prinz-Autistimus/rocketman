@@ -1,6 +1,7 @@
 package com.rocketman.game.objects;
 
 import com.rocketman.game.audio.AudioManager;
+import com.rocketman.game.audio.Sounds;
 import com.rocketman.game.logic.GameManager;
 import com.rocketman.math.Vector2;
 
@@ -128,11 +129,11 @@ public class Player {
     public void setHealth(double x) {
         health = Math.max(0, Math.min(1, x));
         if(health <= LOW_HEALTH) {
-            AudioManager.playSound("near_death");
+            AudioManager.playSound(Sounds.NEAR_DEATH);
         }
-        if(health <= DEATH_LIMIT) {
+        if(isDead()) {
             speedDir = new Vector2(0, 0);
-            AudioManager.stopSound("near_death");
+            AudioManager.stopSound(Sounds.NEAR_DEATH);
             onPlayerDeath.run();
         }
     }
@@ -141,7 +142,7 @@ public class Player {
         ++score;
         resetAmmo();
         if(score % 10 == 0) {
-            AudioManager.playSound("score_multiple");
+            AudioManager.playSound(Sounds.SCORE_MULTIPLE);
         }
     }
 
@@ -153,9 +154,15 @@ public class Player {
         ammo = INITIAL_AMMO;
     }
 
+    public void resetRotationSpeed() { rotation = 0; }
+
     public int getAmmo() { return ammo; }
     public int getMaxAmmo() { return INITIAL_AMMO; }
 
     public int getScore() { return score; }
+
+    public boolean isDead() {
+        return health<=DEATH_LIMIT;
+    }
 
 }

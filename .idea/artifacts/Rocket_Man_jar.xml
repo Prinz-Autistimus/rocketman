@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Rocket Man:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Rocket_Man_jar</output-path>
+    <root id="archive" name="Rocket Man.jar">
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/src/com/rocketman/META-INF/MANIFEST.MF" />
+      </element>
+      <element id="module-output" name="Rocket Man" />
+    </root>
+  </artifact>
+</component>
