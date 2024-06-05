@@ -5,9 +5,20 @@ import java.util.function.Consumer;
 
 public class Bullet {
 
+    //--Settings---------------------------------------------------
+
+    public static final int SIZE = 30;
+
+    //--Attributes-------------------------------------------------
+
+    //Position
     private final Vector2 pos;
     private final Vector2 dir;
+
+    //Rotation
     private final double rot;
+
+    //Events
     private final Consumer<Bullet> onDelete;
 
     public Bullet(Vector2 _position, Vector2 _dir, double _rot, Consumer<Bullet> _onDelete) {
