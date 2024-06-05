@@ -2,6 +2,7 @@ package com.rocketman.gui;
 
 import com.rocketman.game.Asteroid;
 import com.rocketman.game.Bullet;
+import com.rocketman.game.GameManager;
 import com.rocketman.game.Player;
 import com.rocketman.math.Vector2;
 
@@ -16,16 +17,23 @@ import java.util.Vector;
 
 public class CanvasClass extends JPanel {
 
-    private HashMap<String, BufferedImage> assets = new HashMap<>();
-    private Player player;
+    //--Attributes-------------------------------------------------
+
+    //Settings
     private boolean playerState = false;
     private final int stateFrameCountMax = 15;
     private int stateFrameCount = stateFrameCountMax;
-    private Vector<Asteroid> asteroids;
-    private Vector<Bullet> bullets;
-
     private long frameTime = 0;
     private long lastFrame = 0;
+
+    //Objects
+    private final Player player;
+    private final Vector<Asteroid> asteroids;
+    private final Vector<Bullet> bullets;
+
+    //Assets
+    private final HashMap<String, BufferedImage> assets = new HashMap<>();
+
 
     public CanvasClass(Player _player, Vector<Asteroid> _asteroids, Vector<Bullet> _bullets) {
         if(!loadAssets()) { System.exit(1); }
@@ -101,22 +109,20 @@ public class CanvasClass extends JPanel {
     }
 
     private void drawAmmo(Graphics g) {
-        Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
         for(int i = 0; i < player.getAmmo(); ++i) {
-            g.drawImage(assets.get("bullet"), i*40, (int) d.getHeight()-150, 80, 80, null);
+            g.drawImage(assets.get("bullet"), i*40, (int) GameManager.screenSize.getHeight()-150, 80, 80, null);
         }
 
         g.setColor(new Color(255,70,120,255));
-        g.drawRoundRect(5, (int) d.getHeight()-150, player.getMaxAmmo()*40 + 35, 80, 20, 20);
+        g.drawRoundRect(5, (int) GameManager.screenSize.getHeight()-150, player.getMaxAmmo()*40 + 35, 80, 20, 20);
     }
 
     private void drawScore(Graphics g) {
-        Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
         g.setColor(Color.WHITE);
         Font f = new Font("TimesRoman", Font.PLAIN, 30);
         g.setFont(f);
         String scoreText = "Score: " + player.getScore();
-        g.drawString(scoreText, (int) d.getWidth()/2-g.getFontMetrics().stringWidth(scoreText)/2, 35);
+        g.drawString(scoreText, (int) GameManager.screenSize.getWidth()/2-g.getFontMetrics().stringWidth(scoreText)/2, 35);
 
     }
 
@@ -126,7 +132,7 @@ public class CanvasClass extends JPanel {
             Vector2 pos = b.getPos();
             double rot = b.getRot();
             BufferedImage transformed = rotate(assets.get("bullet"), rot);
-            g.drawImage(transformed, (int) pos.x(), (int) pos.y(), 30, 30, null);
+            g.drawImage(transformed, (int) pos.x(), (int) pos.y(), Bullet.SIZE, Bullet.SIZE, null);
         }
     }
 
@@ -136,27 +142,32 @@ public class CanvasClass extends JPanel {
             Vector2 pos = a.getPos();
             double rot = a.getRotation();
             BufferedImage transformed = rotate(assets.get("asteroid"), rot);
-            g.drawImage(transformed, (int) pos.x(), (int) pos.y(), 50, 50, null);
+            g.drawImage(transformed, (int) pos.x(), (int) pos.y(), Asteroid.SIZE, Asteroid.SIZE, null);
         }
     }
 
     private void drawHealthBar(Graphics g) {
         Vector2 pos = player.getPosition();
+        final int xOffset = 25;
+        final int yOffset = 90;
+        final double frame_width = .05;
+        final int height = 5;
+        final int arc = 5;
 
         g.setColor(Color.WHITE);
-        g.fillRoundRect((int) pos.x()+25, (int) pos.y()+90, 50, 5, 5, 5);
+        g.fillRoundRect((int) pos.x()+xOffset, (int) pos.y()+yOffset, Player.HEALTHBAR_SIZE, height, arc, arc);
 
         g.setColor(Color.BLACK);
-        g.fillRoundRect((int) pos.x()+25, (int) pos.y()+90, (int)((player.getHealth()+.05)*50), 5, 5, 5);
+        g.fillRoundRect((int) pos.x()+xOffset, (int) pos.y()+yOffset, (int)((player.getHealth()+frame_width)*Player.HEALTHBAR_SIZE), height, arc, arc);
 
         g.setColor(Color.GREEN);
-        g.fillRoundRect((int) pos.x()+25, (int) pos.y()+90, (int)(player.getHealth()*50), 5, 5, 5);
+        g.fillRoundRect((int) pos.x()+xOffset, (int) pos.y()+yOffset, (int)(player.getHealth()*Player.HEALTHBAR_SIZE), height, arc, arc);
     }
 
     private void drawRocket(Graphics g) {
         double rot = player.getRotation();
         BufferedImage transformedRocket = rotate(getRocket(), rot);
-        g.drawImage(transformedRocket, (int) player.getPosition().x(), (int) player.getPosition().y(), (int) player.getPosition().x()+100, (int) player.getPosition().y()+100, 0, 0, transformedRocket.getWidth(), transformedRocket.getHeight(), null);
+        g.drawImage(transformedRocket, (int) player.getPosition().x(), (int) player.getPosition().y(), (int) player.getPosition().x()+Player.SIZE, (int) player.getPosition().y()+Player.SIZE, 0, 0, transformedRocket.getWidth(), transformedRocket.getHeight(), null);
     }
 
     private void drawBackground(Graphics g) {
