@@ -1,16 +1,14 @@
 package com.rocketman.game;
 
 import com.rocketman.math.Vector2;
-
-import java.awt.*;
 import java.util.function.Consumer;
 
 public class Bullet {
 
-    private Vector2 pos;
-    private Vector2 dir;
-    private double rot;
-    private Consumer<Bullet> onDelete;
+    private final Vector2 pos;
+    private final Vector2 dir;
+    private final double rot;
+    private final Consumer<Bullet> onDelete;
 
     public Bullet(Vector2 _position, Vector2 _dir, double _rot, Consumer<Bullet> _onDelete) {
         pos = _position;
@@ -20,15 +18,15 @@ public class Bullet {
     }
 
     public Vector2 getPos() { return pos; }
-    public Vector2 getDirection() { return dir; }
     public double getRot() { return rot; }
 
     public void move() {
-        Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
-        if(pos.x() <= -200 || pos.x() >= size.width+200 || pos.y() <= -200 || pos.y() >= size.height+200) {
-            onDelete.accept(this);
-        }
+        if(isOutOfBounds()) { onDelete.accept(this); }
         pos.add(dir);
+    }
+
+    private boolean isOutOfBounds() {
+        return pos.x() <= -200 || pos.x() >= GameManager.screenSize.width+200 || pos.y() <= -200 || pos.y() >= GameManager.screenSize.height+200;
     }
 
     public void collision() {
