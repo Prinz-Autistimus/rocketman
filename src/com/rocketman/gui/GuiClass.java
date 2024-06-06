@@ -4,11 +4,15 @@ import com.rocketman.game.objects.Asteroid;
 import com.rocketman.game.objects.Bullet;
 import com.rocketman.game.objects.Player;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
@@ -108,6 +112,14 @@ public class GuiClass {
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setResizable(true);
         window.setExtendedState(JFrame.MAXIMIZED_BOTH);
+
+        URL url = ClassLoader.getSystemResource("sprites/icon.png");
+        try {
+            Image icon = ImageIO.read(url);
+            window.setIconImage(icon);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void initComponents() {
