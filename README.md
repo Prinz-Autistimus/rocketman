@@ -8,7 +8,7 @@ I was bored and thought it would be funny to have a little Rocket flying through
 
 ## Installation
 
-To try it yourself, just download the lastest Artifact from [this size](https://github.com/Prinz-Autistimus/rocketman/tree/master/out/artifacts/Rocket_Man_jar). You'll need at least Java 17 to run it.
+To try it yourself, just download the lastest Artifact from [this site](https://github.com/Prinz-Autistimus/rocketman/tree/master/out/artifacts/Rocket_Man_jar). You'll need at least Java 17 to run it.
 
 Alternitavely, you can just build it yourself from the source code. Feel free to message me if you encounter any errors (or fix the yourself if you like xD)
     
