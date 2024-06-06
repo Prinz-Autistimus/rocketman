@@ -27,9 +27,10 @@ public class GuiClass {
     private Runnable onCloseFunction;
     private Consumer<Integer> onRotationInput;
     private Runnable onAccelerationInput;
+    private Runnable onStopAccelerationInput;
     private Runnable onShootInput;
 
-    public GuiClass(int _width, int _height, Player _player, Vector<Asteroid> _asteroids, Vector<Bullet> _bullets, Runnable _onClose, Consumer<Integer> _onRotationInput, Runnable _onAccelerationInput, Runnable _onShootInput) {
+    public GuiClass(int _width, int _height, Player _player, Vector<Asteroid> _asteroids, Vector<Bullet> _bullets, Runnable _onClose, Consumer<Integer> _onRotationInput, Runnable _onAccelerationInput, Runnable _onStopAccelerationInput, Runnable _onShootInput) {
         this.width = _width;
         this.height = _height;
 
@@ -38,6 +39,7 @@ public class GuiClass {
         this.onCloseFunction = _onClose;
         this.onRotationInput = _onRotationInput;
         this.onAccelerationInput = _onAccelerationInput;
+        this.onStopAccelerationInput = _onStopAccelerationInput;
         this.onShootInput = _onShootInput;
 
         this.asteroids = _asteroids;
@@ -86,6 +88,9 @@ public class GuiClass {
                             case 87 -> onAccelerationInput.run();
                             case 32 -> onShootInput.run();
                         }
+                    }
+                    if(!pressedKeys.contains(87)) {
+                        onStopAccelerationInput.run();
                     }
                     try {
                         Thread.sleep(20);

@@ -52,7 +52,7 @@ public class GameManager {
         bullets = new Vector<>();
 
         //initialize GUI
-        gui = new GuiClass(WIDTH, HEIGHT, player, asteroids, bullets, this::stopUpdater, this::onRotationInput, this::onAccelerationInput, this::onShootInput);
+        gui = new GuiClass(WIDTH, HEIGHT, player, asteroids, bullets, this::stopUpdater, this::onRotationInput, this::onAccelerationInput, this::onStopAccelerationInput, this::onShootInput);
 
         //Start Game Logic
         startUpdater();
@@ -135,6 +135,11 @@ public class GameManager {
 
     private void onAccelerationInput() {
         player.accelerate();
+        AudioManager.playSound(Sounds.SHIP_BOOST);
+    }
+
+    private void onStopAccelerationInput() {
+        AudioManager.stopSound(Sounds.SHIP_BOOST);
     }
 
     private void onShootInput() {

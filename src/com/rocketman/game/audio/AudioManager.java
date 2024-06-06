@@ -58,9 +58,10 @@ public class AudioManager {
 
     public static void playSound(String name) {
         Clip c = audioClips.get(name);
-        if(c != null) {
+        if(c != null && (!c.isActive() || Sounds.getByName(name).isOverridable())) {
             c.setFramePosition(0);
             c.start();
+            System.getLogger("AudioManager").log(System.Logger.Level.INFO, "Playing sound: " + name);
         }
     }
 
@@ -73,6 +74,7 @@ public class AudioManager {
         if(c != null && c.isActive()) {
             c.stop();
             c.setMicrosecondPosition(0);
+            System.getLogger("AudioManager").log(System.Logger.Level.INFO, "Stopping sound: " + name);
         }
     }
 
