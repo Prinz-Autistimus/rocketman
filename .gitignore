@@ -44,3 +44,12 @@
 /out/production/Rocket Man/sprites/bullet_old.png
 /out/production/Rocket Man/sprites/rocket_256_off.png
 /out/production/Rocket Man/sprites/rocket_256_on.png
+/out/production/Rocket Man/com/rocketman/game/objects/Asteroid.class
+/out/production/Rocket Man/com/rocketman/game/audio/AudioManager.class
+/out/production/Rocket Man/com/rocketman/game/objects/Bullet.class
+/out/production/Rocket Man/com/rocketman/game/logic/GameManager.class
+/out/production/Rocket Man/com/rocketman/META-INF/MANIFEST.MF
+/out/production/Rocket Man/com/rocketman/game/objects/Player.class
+/out/production/Rocket Man/audio/ship_boost.wav
+/out/production/Rocket Man/com/rocketman/assets/audio/ship_boost.wav
+/out/production/Rocket Man/com/rocketman/game/audio/Sounds.class
